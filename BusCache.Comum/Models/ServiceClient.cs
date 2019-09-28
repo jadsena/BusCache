@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 
@@ -26,10 +27,14 @@ namespace BusCache.Comum.Models
         /// <exception cref="System.IO.IOException"></exception>
         public void SendData(string Data)
         {
+            SendData(Client.GetStream(), Data);
+        }
+        public void SendData(Stream stream, string Data)
+        {
             byte[] buffer = Encoding.ASCII.GetBytes(Data + Environment.NewLine);
-            NetworkStream stream = Client.GetStream();
 
             stream.Write(buffer, 0, buffer.Length);
+
         }
     }
 }
