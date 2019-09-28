@@ -1,2 +1,2 @@
 # BusCache
-A Servicebus opensource write in .Net Core C#
+A Service bus opensource write in .Net Core C#
