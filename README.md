@@ -11,7 +11,7 @@ BusCache is a Windows service that responds on port 7289.
   ```
 2. Send Message
 ```
-   sm <Destination Service Name > "Message"
+   sm <Destination Service Name> "Message"
 ```
 3. List of Conected Services
 ```
