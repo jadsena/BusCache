@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RuntimeIdentifiers>win-x64;win-x86;linux-x64</RuntimeIdentifiers>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!--<RuntimeIdentifier>win-x64</RuntimeIdentifier>-->
     <Version>0.1.0</Version>
     <Authors>Jean A. Sena</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -14,7 +14,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="hostsettings.json" />
+    <Compile Remove="Extensions\CacheServiceExtensions.cs" />
+    <Compile Remove="Services\CacheService.cs" />
+    <Compile Remove="Services\ICacheService.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.2.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.2.0" />

@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using BusCache.Comandos;
@@ -19,13 +18,13 @@ namespace BusCache.Services
     public class TCPServer : IDisposable, ITCPServer
     {
         private bool disposed = false;
-        private object _lock = new object();
+        private readonly object _lock = new object();
         private TCPServerOptions TcpServerOptions { get; }
         private ILogger Logger { get; }
         private TcpListener Listener { get; }
         private ServiceClientCollection Collection { get; }
 
-        private Processor _processor;
+        private readonly Processor _processor;
 
         private List<Task> Tasks { get; }
         private readonly CancellationTokenSource cts;
@@ -49,11 +48,11 @@ namespace BusCache.Services
                 while (true)
                 {
                     Logger.LogInformation($"Waiting for client in ip:port tcp: {TcpServerOptions.IP}:{TcpServerOptions.Port}...");
-                    var clientTask = await Listener.AcceptTcpClientAsync(); // Get the client
+                    var clientTask = await Listener.AcceptTcpClientAsync();
                     ServiceClient client = new ServiceClient() { Client = clientTask, ServiceName = Guid.NewGuid().ToString(), Name = $"Servico{Collection.Count + 1}" };
                     Collection.Add(client);
                     Logger.LogDebug($"Someone connected!!! {client.Name}");
-                    Task task = new Task(async () => await Handle_clients(client.ServiceName), cts.Token);
+                    Task task = new Task( async () => await Handle_clients(client.ServiceName).ConfigureAwait(true), cts.Token);
                     task.Start();
                     Tasks.Add(task);
                 }
@@ -88,9 +87,9 @@ namespace BusCache.Services
                 try
                 {
                     sr = new StreamReader(stream);
-                    message = await sr.ReadLineAsync();
+                    message = await sr.ReadLineAsync().ConfigureAwait(true);
                 }
-                catch (IOException ex)
+                catch (Exception ex)
                 {
                     Logger.LogError($"received ERROR from [{clients.Name}]:[{clients.Client.Client.RemoteEndPoint}]");
                     Logger.LogError(ex.ToString());
@@ -135,12 +134,13 @@ namespace BusCache.Services
             GC.SuppressFinalize(this);
         }
 
-        private void Dispose(bool dispose)
+        protected virtual void Dispose(bool dispose)
         {
             if (dispose)
                 if (!disposed)
                 {
                     Listener.Stop();
+                    cts?.Dispose();
                     disposed = true;
                 }
         }

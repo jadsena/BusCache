@@ -8,6 +8,7 @@ namespace BusCache.Comum.Models
 {
     public class ServiceClient
     {
+        private readonly object obj = new object();
         public string ServiceName { get; set; }
         /// <summary>
         /// Display name
@@ -31,10 +32,12 @@ namespace BusCache.Comum.Models
         }
         public void SendData(Stream stream, string Data)
         {
-            byte[] buffer = Encoding.ASCII.GetBytes(Data + Environment.NewLine);
+            lock (obj)
+            {
+                byte[] buffer = Encoding.ASCII.GetBytes(Data + Environment.NewLine);
 
-            stream.Write(buffer, 0, buffer.Length);
-
+                stream.Write(buffer, 0, buffer.Length);
+            }
         }
     }
 }

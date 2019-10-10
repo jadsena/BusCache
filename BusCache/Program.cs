@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using BusCache.Extensions;
 using System.Threading.Tasks;
 using Serilog;
+using System.IO;
+using BusCache.Comum.Extensions;
 
 namespace BusCache
 {
@@ -19,12 +21,13 @@ namespace BusCache
             var builder = new HostBuilder()
                 .ConfigureHostConfiguration(configHost =>
                 {
-                    configHost.SetBasePath(Environment.CurrentDirectory);
+                    configHost.SetBasePath(Directory.GetCurrentDirectory());
                     configHost.AddJsonFile("hostsettings.json", optional: true);
                     configHost.AddEnvironmentVariables(prefix: "DOTNETCORE_");
                 })
                 .ConfigureAppConfiguration((hostContext, appConfig) =>
                 {
+                    appConfig.SetBasePath(Directory.GetCurrentDirectory());
                     appConfig.AddJsonFile("appsettings.json", false, true);
                     appConfig.AddJsonFile(
                         $"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json",
@@ -42,6 +45,7 @@ namespace BusCache
                     });
                     services.AddOptions();
                     services.AddTCPServer(hostContext.Configuration.GetSection("TCPServerOptions"));
+                    services.AddCacheService();
                 })
                 .UseConsoleLifetime();
 

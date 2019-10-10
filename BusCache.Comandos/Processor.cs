@@ -2,6 +2,7 @@
 using BusCache.Comandos.Services;
 using BusCache.Comum.Collections;
 using BusCache.Comum.Models;
+using BusCache.Comum.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,13 @@ namespace BusCache.Comandos
     {
         private readonly ILogger<Processor> _logger;
         private readonly ServiceClientCollection _collection;
+        private readonly ICacheService _cacheService;
 
-        public Processor(ILogger<Processor> logger, ServiceClientCollection collection)
+        public Processor(ILogger<Processor> logger, ServiceClientCollection collection, ICacheService cacheService )
         {
             _logger = logger;
             _collection = collection;
+            _cacheService = cacheService;
         }
 
         public void Distribution(ComandoModel comando, ServiceClient sender)
@@ -42,6 +45,14 @@ namespace BusCache.Comandos
                         sb.AppendLine(item.Name);
                     }
                     sender.SendData(sb.ToString());
+                    break;
+                case "set":
+                    string[] arr = comando.Parametros.Split(' ');
+                    _cacheService.Set(arr[0], string.Join(" ", arr, 1, arr.Length - 1));
+                    break;
+                case "get":
+                    var resp = _cacheService.Get(comando.Parametros);
+                    sender.SendData(resp.ToString());
                     break;
                 default:
                     sender.SendData($"Comando [{comando.Comando}] não identificado como um comando.");
