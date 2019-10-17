@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +27,15 @@ namespace BusCache
                 Server.AceitarClientes(cancellationToken);
                 return Task.CompletedTask;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is ArgumentException ||
+                                          ex is ArgumentNullException ||
+                                          ex is ArgumentOutOfRangeException ||
+                                          ex is OutOfMemoryException ||
+                                          ex is OverflowException ||
+                                          ex is EncoderFallbackException ||
+                                          ex is InvalidOperationException ||
+                                          ex is ObjectDisposedException ||
+                                          ex is IOException)
             {
                 Logger.LogError(ex.ToString());
                 return Task.FromException(ex);
@@ -40,7 +49,15 @@ namespace BusCache
                 Server.StopServer();
                 return Task.CompletedTask;
             }
-            catch(Exception ex)
+            catch(Exception ex) when (ex is ArgumentException ||
+                                          ex is ArgumentNullException ||
+                                          ex is ArgumentOutOfRangeException ||
+                                          ex is OutOfMemoryException ||
+                                          ex is OverflowException ||
+                                          ex is EncoderFallbackException ||
+                                          ex is InvalidOperationException ||
+                                          ex is ObjectDisposedException ||
+                                          ex is IOException)
             {
                 Logger.LogError(ex.ToString());
                 return Task.FromException(ex);

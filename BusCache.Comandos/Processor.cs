@@ -22,7 +22,19 @@ namespace BusCache.Comandos
             _collection = collection;
             _cacheService = cacheService;
         }
-
+        /// <summary>
+        /// Roteador de comandos recebidos
+        /// </summary>
+        /// <param name="comando">Comando recebido</param>
+        /// <param name="sender">Cliente que enviou o comando</param>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="EncoderFallbackException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="System.IO.IOException"></exception>
+        /// <exception cref="OutOfMemoryException"></exception>
         public void Distribution(ComandoModel comando, ServiceClient sender)
         {
             _logger.LogDebug($"comando [{comando.Comando}], parametros [{comando.Parametros}].");

@@ -8,7 +8,15 @@ namespace BusCache.Comandos.Models
     {
         public string Comando { get; set; }
         public string Parametros { get; set; }
-
+        /// <summary>
+        /// Converte string em ComandoModel
+        /// </summary>
+        /// <param name="mensagem">string</param>
+        /// <returns>ComandoModel</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="OutOfMemoryException"></exception>
+        /// <exception cref="OverflowException"></exception>
         public static ComandoModel Parse(string mensagem)
         {
             if (string.IsNullOrWhiteSpace(mensagem)) throw new ArgumentNullException(nameof(mensagem));

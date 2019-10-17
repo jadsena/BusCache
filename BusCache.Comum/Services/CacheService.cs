@@ -19,12 +19,15 @@ namespace BusCache.Comum.Services
 
         public void Set(string key, object value)
         {
+            _logger.LogDebug($"Set [{key}] value [{value}]");
             _memoryCache.Set(key, value);
         }
 
         public object Get(string key)
         {
-            return _memoryCache.Get(key);
+            if (_memoryCache.TryGetValue(key, out string value))
+                return value;
+            return "";
         }
 
         public bool TryGet(string key, out object value)

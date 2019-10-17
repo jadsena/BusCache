@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
@@ -35,7 +36,15 @@ namespace BusCache
                 Run(this); // This blocks until the service is stopped.
                 _delayStart.TrySetException(new InvalidOperationException("Stopped without starting"));
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is ArgumentException ||
+                                          ex is ArgumentNullException ||
+                                          ex is ArgumentOutOfRangeException ||
+                                          ex is OutOfMemoryException ||
+                                          ex is OverflowException ||
+                                          ex is EncoderFallbackException ||
+                                          ex is InvalidOperationException ||
+                                          ex is ObjectDisposedException ||
+                                          ex is IOException)
             {
                 _delayStart.TrySetException(ex);
             }

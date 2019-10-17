@@ -10,7 +10,9 @@ namespace BusCache.Extensions
 {
     public static class CacheServiceExtensions
     {
-        //services.AddMemoryCache();
+        /// <summary>
+        /// Adiciona o serviço de cache ao pool se serviços
+        /// </summary>
         public static IServiceCollection AddCacheService(this IServiceCollection services)
         {
             services.AddMemoryCache();

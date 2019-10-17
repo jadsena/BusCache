@@ -12,6 +12,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using BusCache.Comandos;
+using System.Text;
 
 namespace BusCache.Services
 {
@@ -52,7 +53,7 @@ namespace BusCache.Services
                     ServiceClient client = new ServiceClient() { Client = clientTask, ServiceName = Guid.NewGuid().ToString(), Name = $"Servico{Collection.Count + 1}" };
                     Collection.Add(client);
                     Logger.LogDebug($"Someone connected!!! {client.Name}");
-                    Task task = new Task( async () => await Handle_clients(client.ServiceName).ConfigureAwait(true), cts.Token);
+                    Task task = new Task( async () => await Handle_clients(client.ServiceName).ConfigureAwait(false), cts.Token);
                     task.Start();
                     Tasks.Add(task);
                 }
@@ -87,9 +88,13 @@ namespace BusCache.Services
                 try
                 {
                     sr = new StreamReader(stream);
-                    message = await sr.ReadLineAsync().ConfigureAwait(true);
+                    message = await sr.ReadLineAsync().ConfigureAwait(false);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is ArgumentException ||
+                                          ex is ArgumentNullException ||
+                                          ex is ArgumentOutOfRangeException ||
+                                          ex is InvalidOperationException ||
+                                          ex is ObjectDisposedException)
                 {
                     Logger.LogError($"received ERROR from [{clients.Name}]:[{clients.Client.Client.RemoteEndPoint}]");
                     Logger.LogError(ex.ToString());
@@ -109,7 +114,15 @@ namespace BusCache.Services
                     ComandoModel comando = ComandoModel.Parse(message);
                     _processor.Distribution(comando, clients);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when(ex is ArgumentException || 
+                                          ex is ArgumentNullException ||
+                                          ex is ArgumentOutOfRangeException ||
+                                          ex is OutOfMemoryException ||
+                                          ex is OverflowException ||
+                                          ex is EncoderFallbackException ||
+                                          ex is InvalidOperationException ||
+                                          ex is ObjectDisposedException ||
+                                          ex is IOException)
                 {
                     clients.SendData(ex.ToString());
                     Logger.LogError(ex.ToString());
