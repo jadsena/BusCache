@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "BusCache"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.2.0"
 #define MyAppPublisher "jadsena"
 #define MyAppURL "https://github.com/jadsena/BusCache"
 
@@ -39,12 +39,57 @@ Source: "D:\Users\jadse\source\repos\BusCache\BusCache\bin\Release\netcoreapp2.2
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [run]
-Filename: {sys}\sc.exe; Parameters: "stop BusCache" ; Flags: runhidden
-Filename: {sys}\sc.exe; Parameters: "delete BusCache" ; Flags: runhidden
-Filename: {sys}\sc.exe; Parameters: "create BusCache start= auto binPath= ""{app}\BusCache.exe""" ; Flags: runhidden
-Filename: {sys}\sc.exe; Parameters: "start BusCache" ; Flags: runhidden
+Filename: {sys}\sc.exe; Parameters: "stop BusCache" ; WorkingDir: "{app}"; Flags: runhidden 
+Filename: {sys}\sc.exe; Parameters: "delete BusCache" ; WorkingDir: "{app}"; Flags: runhidden 
+Filename: {sys}\sc.exe; Parameters: "create BusCache start= auto binPath= ""{app}\BusCache.exe""" ; WorkingDir: "{app}"; Flags: runhidden 
+Filename: {sys}\sc.exe; Parameters: "description ""Serviço de bus e cache para aplicações""" ; WorkingDir: "{app}"; Flags: runhidden 
+Filename: {sys}\sc.exe; Parameters: "start BusCache" ; WorkingDir: "{app}"; Flags: runhidden 
 
 [UninstallRun]
 Filename: {sys}\sc.exe; Parameters: "stop BusCache" ; Flags: runhidden
 Filename: {sys}\sc.exe; Parameters: "delete BusCache" ; Flags: runhidden
 
+[UninstallRun]
+Filename: {sys}\sc.exe; Parameters: "stop BusCache" ; WorkingDir: "{app}"; Flags: runhidden
+Filename: {sys}\sc.exe; Parameters: "delete BusCache" ; WorkingDir: "{app}"; Flags: runhidden
+
+[code]
+
+#include "services_unicode.iss"
+
+const
+  SERVICE_NAME = 'BusCache';
+  SERVICE_DISPLAY_NAME = 'BusCache';
+  SERVICE_EXE = 'BusCache.exe';
+  
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  Log('CurStepChanged(' + IntToStr(Ord(CurStep)) + ') called');
+
+  if CurStep = ssInstall then begin
+    if ServiceExists(SERVICE_NAME) then begin
+      if SimpleQueryService(SERVICE_NAME) = SERVICE_RUNNING then begin
+        SimpleStopService(SERVICE_NAME, True, False);
+      end;
+      SimpleDeleteService(SERVICE_NAME);
+    end;
+//  end
+//  else if CurStep = ssPostInstall then begin
+//    SimpleCreateService(SERVICE_NAME, SERVICE_DISPLAY_NAME, ExpandConstant('{app}\' + SERVICE_EXE), SERVICE_AUTO_START, '', '', False, False);
+//    SimpleStartService(SERVICE_NAME, True, False);
+  end;
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  Log('CurUninstallStepChanged(' + IntToStr(Ord(CurUninstallStep)) + ') called');
+
+  if CurUninstallStep = usUninstall then begin
+    if ServiceExists(SERVICE_NAME) then begin
+      if SimpleQueryService(SERVICE_NAME) = SERVICE_RUNNING then begin
+        SimpleStopService(SERVICE_NAME, True, False);
+      end;
+      SimpleDeleteService(SERVICE_NAME);
+    end;
+  end;
+end;

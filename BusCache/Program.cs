@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Serilog;
 using System.IO;
 using BusCache.Comum.Extensions;
+using System.Reflection;
 
 namespace BusCache
 {
@@ -21,13 +22,18 @@ namespace BusCache
             var builder = new HostBuilder()
                 .ConfigureHostConfiguration(configHost =>
                 {
-                    configHost.SetBasePath(Directory.GetCurrentDirectory());
+                    Assembly assembly = Assembly.GetExecutingAssembly();
+                    string path = Path.GetDirectoryName(assembly.Location);
+                    System.IO.Directory.SetCurrentDirectory(path);
+                    configHost.SetBasePath(path);
                     configHost.AddJsonFile("hostsettings.json", optional: true);
                     configHost.AddEnvironmentVariables(prefix: "DOTNETCORE_");
                 })
                 .ConfigureAppConfiguration((hostContext, appConfig) =>
                 {
-                    appConfig.SetBasePath(Directory.GetCurrentDirectory());
+                    Assembly assembly = Assembly.GetExecutingAssembly();
+                    string path = Path.GetDirectoryName(assembly.Location);
+                    appConfig.SetBasePath(path);
                     appConfig.AddJsonFile("appsettings.json", false, true);
                     appConfig.AddJsonFile(
                         $"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json",
