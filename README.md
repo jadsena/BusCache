@@ -1,10 +1,10 @@
 # BusCache
 A Service bus Open Source write in .Net Core C#
 
-# Using
+## Using
 BusCache is a Windows service that responds on port 7289.
 
-# Commands
+### Commands
 1. Register
   ```
      rg <Service Name>
@@ -18,7 +18,7 @@ BusCache is a Windows service that responds on port 7289.
    ls
 ```
 
-# Teste using nc client
+### Teste using nc client
 1. Install and start service BusCache
 
 2. In a linux console write:
@@ -26,7 +26,7 @@ BusCache is a Windows service that responds on port 7289.
     $ nc 127.0.0.1 7289
     rg Service1
 ```
-the response for this command 
+response for this command 
 ```
     Nome trocado com sucesso
 ```
@@ -36,7 +36,7 @@ the response for this command
     $ nc 127.0.0.1 7289
     rg Service2
 ```
-the response for this command 
+response for this command 
 ```
     Nome trocado com sucesso
 ```
@@ -44,7 +44,7 @@ the response for this command
 ```
     ls
 ```
-the response for this command 
+response for this command 
 ```
     Service1
     Service2
@@ -58,3 +58,12 @@ Response in Service1 window
     Test message
 ```
 
+# Cache Commads
+1. Set command
+```
+    set [var] [value]
+```
+2. Get command
+```
+    get [var]
+```
