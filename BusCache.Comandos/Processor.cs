@@ -61,10 +61,12 @@ namespace BusCache.Comandos
                 case "set":
                     string[] arr = comando.Parametros.Split(' ');
                     _cacheService.Set(arr[0], string.Join(" ", arr, 1, arr.Length - 1));
+                    sender.SendData("Valor armezenado com sucesso.");
                     break;
                 case "get":
                     var resp = _cacheService.Get(comando.Parametros);
                     sender.SendData(resp.ToString());
+                    _logger.LogInformation($"Send [{resp.ToString()}] to [{sender.Name}].");
                     break;
                 default:
                     sender.SendData($"Comando [{comando.Comando}] não identificado como um comando.");

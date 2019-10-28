@@ -84,7 +84,7 @@ namespace BusCache.Services
             {
                 stream = client.GetStream();
                 clients = Collection[ClientName];
-
+                clients.Client.NoDelay = true;
                 try
                 {
                     sr = new StreamReader(stream);
@@ -94,7 +94,8 @@ namespace BusCache.Services
                                           ex is ArgumentNullException ||
                                           ex is ArgumentOutOfRangeException ||
                                           ex is InvalidOperationException ||
-                                          ex is ObjectDisposedException)
+                                          ex is ObjectDisposedException ||
+                                          ex is IOException)
                 {
                     Logger.LogError($"received ERROR from [{clients.Name}]:[{clients.Client.Client.RemoteEndPoint}]");
                     Logger.LogError(ex.ToString());

@@ -34,7 +34,7 @@ namespace BusCache.Comum.Models
         {
             lock (obj)
             {
-                byte[] buffer = Encoding.ASCII.GetBytes(Data + Environment.NewLine);
+                byte[] buffer = Encoding.ASCII.GetBytes(string.Concat(Data, "\n"));
 
                 stream.Write(buffer, 0, buffer.Length);
             }

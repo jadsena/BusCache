@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "BusCache"
-#define MyAppVersion "0.2.0"
+#define MyAppVersion "0.2.1"
 #define MyAppPublisher "jadsena"
 #define MyAppURL "https://github.com/jadsena/BusCache"
 
@@ -25,7 +25,7 @@ InfoAfterFile=D:\Users\jadse\source\repos\BusCache\README.md
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=commandline
-OutputBaseFilename=BusCacheSetup-v020-win-x64
+OutputBaseFilename=BusCacheSetup-v021-win-x64
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
