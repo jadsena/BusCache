@@ -1,3 +1,5 @@
+[![Build Status](https://jadsena.visualstudio.com/BusCache/_apis/build/status/jadsena.BusCache?branchName=master)](https://jadsena.visualstudio.com/BusCache/_build/latest?definitionId=6&branchName=master)
+
 # BusCache
 A Service bus Open Source write in .Net Core C#
 
