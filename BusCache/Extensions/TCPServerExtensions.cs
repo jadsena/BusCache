@@ -16,7 +16,7 @@ namespace BusCache.Extensions
         {
             services.Configure<TCPServerOptions>(options);
             services.AddSingleton<ServiceClientCollection>();
-            services.AddSingleton<Processor>();
+            services.AddTransient<Processor>();
             return services.AddSingleton<ITCPServer, TCPServer>();
         }
     }

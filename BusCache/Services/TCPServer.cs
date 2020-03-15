@@ -73,10 +73,9 @@ namespace BusCache.Services
         private async Task Handle_clients(object o)
         {
             string ClientName = o.ToString();
-            ServiceClient clients;
-
-            lock (_lock) clients = Collection[ClientName];
+            ServiceClient clients = Collection[ClientName];
             TcpClient client = clients.Client;
+
             string message = "";
             NetworkStream stream = null;
             StreamReader sr = null;
@@ -105,28 +104,30 @@ namespace BusCache.Services
                 {
                     break;
                 }
-
-                //limpa final da mensagem
-                if (message.EndsWith("\n")) message = message.Substring(0, message.Length - 1);
-                Logger.LogDebug($"received message [{message}] from [{clients.Name}]:[{clients.Client.Client.RemoteEndPoint}]");
-                if (message.StartsWith("quit")) break;
-                try
+                lock (_lock)
                 {
-                    ComandoModel comando = ComandoModel.Parse(message);
-                    _processor.Distribution(comando, clients);
-                }
-                catch (Exception ex) when(ex is ArgumentException || 
-                                          ex is ArgumentNullException ||
-                                          ex is ArgumentOutOfRangeException ||
-                                          ex is OutOfMemoryException ||
-                                          ex is OverflowException ||
-                                          ex is EncoderFallbackException ||
-                                          ex is InvalidOperationException ||
-                                          ex is ObjectDisposedException ||
-                                          ex is IOException)
-                {
-                    clients.SendData(ex.ToString());
-                    Logger.LogError(ex.ToString());
+                    //limpa final da mensagem
+                    if (message.EndsWith("\n")) message = message.Substring(0, message.Length - 1);
+                    Logger.LogDebug($"received message [{message}] from [{clients.Name}]:[{clients.Client.Client.RemoteEndPoint}]");
+                    if (message.StartsWith("quit")) break;
+                    try
+                    {
+                        ComandoModel comando = ComandoModel.Parse(message);
+                        _processor.Distribution(comando, clients);
+                    }
+                    catch (Exception ex) when (ex is ArgumentException ||
+                                              ex is ArgumentNullException ||
+                                              ex is ArgumentOutOfRangeException ||
+                                              ex is OutOfMemoryException ||
+                                              ex is OverflowException ||
+                                              ex is EncoderFallbackException ||
+                                              ex is InvalidOperationException ||
+                                              ex is ObjectDisposedException ||
+                                              ex is IOException)
+                    {
+                        clients.SendData(ex.ToString());
+                        Logger.LogError(ex.ToString());
+                    }
                 }
             }
 
