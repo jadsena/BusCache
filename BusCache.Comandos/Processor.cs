@@ -14,14 +14,12 @@ namespace BusCache.Comandos
     public class Processor
     {
         private readonly ILogger<Processor> _logger;
-        private readonly ICacheService _cacheService;
         private readonly IServiceProvider _provider;
         private readonly ComandosEntradaCollection _comandosEntrada;
 
-        public Processor(ILogger<Processor> logger, ICacheService cacheService, IServiceProvider provider, IOptions<ComandosEntradaCollection> options)
+        public Processor(ILogger<Processor> logger, IServiceProvider provider, IOptions<ComandosEntradaCollection> options)
         {
             _logger = logger;
-            _cacheService = cacheService;
             _provider = provider;
             _comandosEntrada = options.Value;
         }
@@ -41,29 +39,14 @@ namespace BusCache.Comandos
         public void Distribution(ComandoModel comando, ServiceClient sender)
         {
             _logger.LogDebug($"comando [{comando.Comando}], parametros [{comando.Parametros}].");
-            switch (comando.Comando.ToLower())
+            if (!_comandosEntrada.Contains(comando.Comando.ToLower()))
             {
-                case "sm":
-                case "rg":
-                case "ls":
-                    string srv = _comandosEntrada[comando.Comando.ToLower()].Classe;
-                    IComandosEntrada entrada = (IComandosEntrada)_provider.GetService(Type.GetType(srv));
-                    entrada.Executar(comando, sender);
-                    break;
-                case "set":
-                    string[] arr = comando.Parametros.Split(' ');
-                    _cacheService.Set(arr[0], string.Join(" ", arr, 1, arr.Length - 1));
-                    sender.SendData("Valor armezenado com sucesso.");
-                    break;
-                case "get":
-                    var resp = _cacheService.Get(comando.Parametros);
-                    sender.SendData(resp.ToString());
-                    _logger.LogInformation($"Send [{resp}] to [{sender.Name}].");
-                    break;
-                default:
-                    sender.SendData($"Comando [{comando.Comando}] não identificado como um comando.");
-                    break;
+                sender.SendData($"Comando [{comando.Comando}] não identificado como um comando.");
+                return;
             }
+            string srv = _comandosEntrada[comando.Comando.ToLower()].Classe;
+            IComandosEntrada entrada = (IComandosEntrada)_provider.GetService(Type.GetType(srv));
+            entrada.Executar(comando, sender);
         }
     }
 }

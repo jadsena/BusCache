@@ -18,13 +18,14 @@ namespace BusCache
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    Log.Logger = new LoggerConfiguration()
-                        .ReadFrom.Configuration(hostContext.Configuration)
-                        .CreateLogger();
                     services.AddTCPServer(hostContext.Configuration.GetSection("TCPServerOptions"));
                     services.AddCacheService();
                     services.ConfigureCommads(hostContext.Configuration.GetSection("ComandosEntrada"));
                     services.AddHostedService<HostService>();
-                });
+                })
+            .UseSerilog((hostContext, services, logger) =>
+            {
+                logger.ReadFrom.Configuration(hostContext.Configuration);
+            });
     }
 }
