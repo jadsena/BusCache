@@ -4,6 +4,7 @@ using BusCache.Comum.Collections;
 using BusCache.Comum.Models;
 using BusCache.Comum.Services;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,14 +14,16 @@ namespace BusCache.Comandos
     public class Processor
     {
         private readonly ILogger<Processor> _logger;
-        private readonly ServiceClientCollection _collection;
         private readonly ICacheService _cacheService;
+        private readonly IServiceProvider _provider;
+        private readonly ComandosEntradaCollection _comandosEntrada;
 
-        public Processor(ILogger<Processor> logger, ServiceClientCollection collection, ICacheService cacheService )
+        public Processor(ILogger<Processor> logger, ICacheService cacheService, IServiceProvider provider, IOptions<ComandosEntradaCollection> options)
         {
             _logger = logger;
-            _collection = collection;
             _cacheService = cacheService;
+            _provider = provider;
+            _comandosEntrada = options.Value;
         }
         /// <summary>
         /// Roteador de comandos recebidos
@@ -40,23 +43,12 @@ namespace BusCache.Comandos
             _logger.LogDebug($"comando [{comando.Comando}], parametros [{comando.Parametros}].");
             switch (comando.Comando.ToLower())
             {
-                case "rg":
-                    _collection.UpdateName(sender, comando.Parametros);
-                    sender.SendData("Nome trocado com sucesso");
-                    break;
                 case "sm":
-                    ComandoSMModel comandoSM = ComandoSMModel.From(comando, sender, _collection.GetClientByName(comando.Parametros.Split(' ')[0]));
-                    SendMessage sendMessage = new SendMessage(comandoSM);
-                    sendMessage.Send();
-                    break;
+                case "rg":
                 case "ls":
-                    StringBuilder sb = new StringBuilder();
-                    IList<ServiceClient> list = string.IsNullOrWhiteSpace(comando.Parametros) ? _collection.GetAllClients() : _collection.GetClientsByName(comando.Parametros);
-                    foreach (var item in list)
-                    {
-                        sb.AppendLine(item.Name);
-                    }
-                    sender.SendData(sb.ToString());
+                    string srv = _comandosEntrada[comando.Comando.ToLower()].Classe;
+                    IComandosEntrada entrada = (IComandosEntrada)_provider.GetService(Type.GetType(srv));
+                    entrada.Executar(comando, sender);
                     break;
                 case "set":
                     string[] arr = comando.Parametros.Split(' ');
@@ -66,7 +58,7 @@ namespace BusCache.Comandos
                 case "get":
                     var resp = _cacheService.Get(comando.Parametros);
                     sender.SendData(resp.ToString());
-                    _logger.LogInformation($"Send [{resp.ToString()}] to [{sender.Name}].");
+                    _logger.LogInformation($"Send [{resp}] to [{sender.Name}].");
                     break;
                 default:
                     sender.SendData($"Comando [{comando.Comando}] não identificado como um comando.");

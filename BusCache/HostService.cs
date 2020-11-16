@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace BusCache
 {
-    public class HostService : IHostedService
+    public class HostService : BackgroundService
     {
-        private ILogger Logger { get; }
+        private ILogger<HostService> Logger { get; }
         private ITCPServer Server { get; }
 
         public HostService(ILogger<HostService> logger, ITCPServer server)
@@ -20,7 +20,8 @@ namespace BusCache
             Logger = logger;
             Server = server;
         }
-        public Task StartAsync(CancellationToken cancellationToken)
+        
+        public override Task StartAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -42,7 +43,7 @@ namespace BusCache
             }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public override Task StopAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -62,6 +63,11 @@ namespace BusCache
                 Logger.LogError(ex.ToString());
                 return Task.FromException(ex);
             }
+        }
+
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            return Task.CompletedTask;
         }
     }
 }

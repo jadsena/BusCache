@@ -7,7 +7,7 @@ using BusCache.Comum.Models;
 
 namespace BusCache.Comandos.Services
 {
-    public class SendMessage
+    public class SendClientMessage
     {
         private readonly ComandoSMModel _comando;
         /// <summary>
@@ -15,7 +15,7 @@ namespace BusCache.Comandos.Services
         /// </summary>
         /// <param name="comando">comando a ser enviado</param>
         /// <example>sm [destino] "Mensagem a ser enviada"</example>
-        public SendMessage(ComandoSMModel comando)
+        public SendClientMessage(ComandoSMModel comando)
         {
             _comando = comando;
         }
